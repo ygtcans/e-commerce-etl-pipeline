@@ -56,11 +56,11 @@ def parse_product_page(page_content):
 
             # Append the product data
             trendyol_data.append({
-                "brand": brand,
-                "product_name": product_name,
-                "product_description": product_description,
-                "rating_count": rating_count,
-                "price": product_price
+                "Brand": brand,
+                "Product Name": product_name,
+                "Product Description": product_description,
+                "Rating Count": rating_count,
+                "Price (TL)": product_price
             })
         except Exception as e:
             logging.warning(f"Failed to parse a product: {e}")
@@ -94,7 +94,7 @@ def scrape_trendyol():
 
 def save_to_csv(data, filename=OUTPUT_FILE):
     """Save the scraped data to a CSV file."""
-    fieldnames = ["brand", "product_name", "product_description", "rating_count", "price"]
+    fieldnames = ["Brand", "Product Name", "Product Description", "Rating Count", "Price (TL)"]
     try:
         with open(filename, mode='w', newline='', encoding='utf-8') as file:
             writer = csv.DictWriter(file, fieldnames=fieldnames)
