@@ -42,17 +42,17 @@ def parse_product_page(page_content):
             product_name = product.find("span", class_="prdct-desc-cntnr-name hasRatings")
             product_desc = product.find("div", class_="product-desc-sub-text")
 
-            brand = brand.text.strip() if brand else "No brand"
-            product_name = product_name.text.strip() if product_name else "No product name"
-            product_description = product_desc.text.strip() if product_desc else "No description"
+            brand = brand.text.strip() if brand else None
+            product_name = product_name.text.strip() if product_name else None
+            product_description = product_desc.text.strip() if product_desc else None
 
             # Extract ratings count
             ratings = product.find("div", class_="ratings")
-            rating_count = ratings.find("span", class_="ratingCount").text.strip("()") if ratings else "No ratings"
+            rating_count = ratings.find("span", class_="ratingCount").text.strip("()") if ratings else None
 
             # Extract price
             price = product.find("div", class_="prc-box-dscntd")
-            product_price = price.text.strip() if price else "No price"
+            product_price = price.text.strip() if price else None
 
             # Append the product data
             trendyol_data.append({
