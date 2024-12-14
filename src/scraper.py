@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import csv
 import logging
+import time
 
 # Configure logging
 logging.basicConfig(
@@ -21,6 +22,7 @@ OUTPUT_FILE = "data/raw_data.csv"
 
 def fetch_page(url):
     """Fetch a single page from the given URL."""
+    time.sleep(1)
     try:
         response = requests.get(url, headers=HEADERS, timeout=10)
         response.raise_for_status()
@@ -34,33 +36,34 @@ def parse_product_page(page_content):
     soup = BeautifulSoup(page_content, "html.parser")
     trendyol_data = []
 
-    product_containers = soup.find_all("div", class_="p-card-wrppr")
+    # Use .select() to find product containers
+    product_containers = soup.select("div.p-card-wrppr")
     for product in product_containers:
         try:
-            # Extract brand, product name, and description
-            brand = product.find("span", class_="prdct-desc-cntnr-ttl")
-            product_name = product.find("span", class_="prdct-desc-cntnr-name hasRatings")
-            product_desc = product.find("div", class_="product-desc-sub-text")
-
+            # Use .select() to extract details from the product container
+            brand = product.select_one("span.prdct-desc-cntnr-ttl")
+            product_name = product.select_one("span.prdct-desc-cntnr-name.hasRatings")
+            product_desc = product.select_one("div.product-desc-sub-text")
+            rating_score = product.select_one("span.rating-score")
+            ratings = product.select_one("div.ratings")
+            price = product.select_one("div.prc-box-dscntd")
+            
+            # Extract text if the element exists, otherwise None
             brand = brand.text.strip() if brand else None
             product_name = product_name.text.strip() if product_name else None
-            product_description = product_desc.text.strip() if product_desc else None
-
-            # Extract ratings count
-            ratings = product.find("div", class_="ratings")
-            rating_count = ratings.find("span", class_="ratingCount").text.strip("()") if ratings else None
-
-            # Extract price
-            price = product.find("div", class_="prc-box-dscntd")
-            product_price = price.text.strip() if price else None
-
+            product_desc = product_desc.text.strip() if product_desc else None
+            rating_score = rating_score.text.strip() if rating_score else None
+            ratings = ratings.text.strip("()") if ratings else None
+            price = price.text.strip() if price else None
+            
             # Append the product data
             trendyol_data.append({
-                "Brand": brand,
+                "Product Brand": brand,
                 "Product Name": product_name,
-                "Product Description": product_description,
-                "Rating Count": rating_count,
-                "Price (TL)": product_price
+                "Product Description": product_desc,
+                "Rating Score": rating_score,
+                "Rating Count": ratings,
+                "Price (TL)": price
             })
         except Exception as e:
             logging.warning(f"Failed to parse a product: {e}")
@@ -94,7 +97,7 @@ def scrape_trendyol():
 
 def save_to_csv(data, filename=OUTPUT_FILE):
     """Save the scraped data to a CSV file."""
-    fieldnames = ["Brand", "Product Name", "Product Description", "Rating Count", "Price (TL)"]
+    fieldnames = ["Product Brand", "Product Name", "Product Description", "Rating Score", "Rating Count", "Price (TL)"]
     try:
         with open(filename, mode='w', newline='', encoding='utf-8') as file:
             writer = csv.DictWriter(file, fieldnames=fieldnames)
