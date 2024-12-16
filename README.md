@@ -63,7 +63,6 @@ Airflow manages the execution and scheduling of these tasks.
 Before running the project, ensure the following are installed:
 
 - Python 3.x
-- PostgreSQL database (or other databases you're using)
 - AWS account with an S3 bucket (for storing the cleaned data)
 - Python packages listed in `requirements.txt`
 
