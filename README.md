@@ -72,7 +72,7 @@ Follow these steps to set up and install the project:
 
 1. **Clone the Repository**:
    ```bash
-     git clone https://github.com/your-username/e-commerce-etl-pipeline.git
+     git clone https://github.com/ygtcans/e-commerce-etl-pipeline.git
      cd e-commerce-etl-pipeline
    ```
 2. **Create and Activate a Virtual Environment (Optional but recommended)**:
